@@ -258,7 +258,7 @@ def send_mail(to, name, style, render_url):
         import resend
         resend.api_key = resend_key
         params = {
-            "from": "Bathroom Design <onboarding@resend.dev>",
+            "from": "Bathroom Design <stino89@gmail.com>",
             "to": [to],
             "subject": f"Uw badkamer in stijl {style} — Bathroom Design",
             "html": html,
