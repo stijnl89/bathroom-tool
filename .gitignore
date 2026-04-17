@@ -1,0 +1,23 @@
+# Environment variables — NOOIT committen
+.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Leads data — lokaal houden
+leads.jsonl
+
+# OS bestanden
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Zorg dat logo WEL meekomt
+!static/logo.png

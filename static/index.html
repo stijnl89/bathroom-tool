@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ontdek jouw droomstijl — Bathroom Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--black:#0a0a0a;--off:#111;--card:#161616;--border:#2a2a2a;--muted:#555;--sub:#888;--text:#e8e4de;--accent:#c8a96e;--al:#e2c99a;--white:#f5f1eb}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}
+header{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid var(--border);background:rgba(10,10,10,.94);backdrop-filter:blur(12px)}
+.logo{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;letter-spacing:2.5px;color:var(--accent);text-transform:uppercase}
+.logo span{color:var(--text);font-weight:300}
+.hlink{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);text-decoration:none;transition:color .2s}
+.hlink:hover{color:var(--accent)}
+
+.page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:110px 24px 60px;position:relative}
+.page::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 40% at 50% 110%,rgba(200,169,110,.05) 0%,transparent 70%);pointer-events:none}
+
+.wrap{max-width:660px;width:100%;position:relative;z-index:1}
+
+.eyebrow{font-size:10px;letter-spacing:3.5px;text-transform:uppercase;color:var(--accent);margin-bottom:20px;text-align:center}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,6.5vw,72px);font-weight:300;line-height:1.07;color:var(--white);margin-bottom:20px;text-align:center}
+h1 em{font-style:italic;color:var(--al)}
+.hero-sub{font-size:14px;color:var(--sub);max-width:420px;line-height:1.75;margin:0 auto 44px;text-align:center}
+
+/* Progress bar */
+.pbar{display:flex;gap:5px;justify-content:center;margin-bottom:36px}
+.pdot{height:2px;border-radius:1px;background:var(--border);transition:background .3s,width .3s}
+.pdot.done{background:var(--accent)}
+
+/* Steps */
+.step{display:none}
+.step.active{display:block;animation:fu .35s ease}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* Section label */
+.slabel{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--sub);margin-bottom:14px}
+
+/* Upload */
+.uzone{border:1px dashed var(--border);border-radius:2px;padding:48px 32px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:var(--off)}
+.uzone:hover{border-color:var(--accent);background:var(--card)}
+.uzone input{display:none}
+.uicon{width:36px;height:36px;margin:0 auto 14px;opacity:.25}
+.uzone p{font-size:13px;color:var(--sub);line-height:1.6}
+.uzone strong{color:var(--text);font-weight:400}
+.prevwrap{position:relative;margin-bottom:28px;border-radius:2px;overflow:hidden}
+.previmg{width:100%;max-height:300px;object-fit:cover;display:none;border-radius:2px}
+.prevbadge{position:absolute;bottom:10px;left:10px;background:rgba(10,10,10,.82);border:0.5px solid var(--border);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);padding:5px 10px;border-radius:1px}
+
+/* Option grid */
+.ogrid{display:grid;gap:8px;margin-bottom:28px}
+.ogrid.cols2{grid-template-columns:repeat(2,1fr)}
+.ogrid.cols3{grid-template-columns:repeat(3,1fr)}
+.ocard{border:0.5px solid var(--border);padding:18px 16px;cursor:pointer;transition:border-color .15s,background .15s;background:var(--off);border-radius:2px}
+.ocard:hover{border-color:var(--muted);background:var(--card)}
+.ocard.sel{border-color:var(--accent);background:rgba(200,169,110,.06)}
+.oname{font-size:13px;font-weight:400;color:var(--text);margin-bottom:3px}
+.odesc{font-size:11px;color:var(--sub);line-height:1.5}
+.ocard.sel .oname{color:var(--accent)}
+.ocard-img{width:100%;height:80px;object-fit:cover;border-radius:1px;margin-bottom:10px;display:block;background:var(--card)}
+.otip{font-size:11px;color:var(--sub);margin-bottom:10px;line-height:1.5;padding:8px 12px;border-left:2px solid var(--border);background:var(--card)}
+
+/* Buttons */
+.bgold{width:100%;padding:15px;background:var(--accent);color:var(--black);border:none;border-radius:1px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;transition:background .15s,opacity .15s;margin-top:4px}
+.bgold:hover{background:var(--al)}
+.bgold:disabled{opacity:.3;cursor:not-allowed}
+.bghost{width:100%;padding:13px;background:transparent;border:0.5px solid var(--border);color:var(--sub);border-radius:1px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:border-color .15s,color .15s;margin-top:8px}
+.bghost:hover{border-color:var(--muted);color:var(--text)}
+
+/* Generating */
+.genwrap{text-align:center;padding:60px 20px}
+.spin{width:30px;height:30px;margin:0 auto 22px;border:1.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .85s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.gentitle{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--white);margin-bottom:6px}
+.gensub{font-size:13px;color:var(--sub)}
+
+/* Result */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+.compare img,.imgbox{width:100%;height:210px;border-radius:2px;border:0.5px solid var(--border);object-fit:cover}
+.imgbox{background:var(--card);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;overflow:hidden;position:relative}
+.imgbox img{width:100%;height:100%;object-fit:cover;filter:blur(10px);transform:scale(1.1)}
+.blur-label{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.imglabel{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);text-align:center;margin-top:7px}
+
+/* Gate */
+.gate{border:0.5px solid var(--border);background:var(--off);border-radius:2px;padding:26px;margin-bottom:8px}
+.glabel{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.gtitle{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--white);margin-bottom:6px}
+.gsub{font-size:13px;color:var(--sub);line-height:1.65;margin-bottom:18px}
+.inp{width:100%;padding:12px 14px;margin-bottom:8px;background:var(--card);border:0.5px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;border-radius:1px;outline:none;transition:border-color .15s}
+.inp:focus{border-color:var(--accent)}
+.inp::placeholder{color:var(--muted)}
+.errmsg{font-size:12px;color:#e24b4a;margin-top:8px;display:none}
+.note{font-size:10px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.55}
+
+/* Thankyou */
+.ty{text-align:center;padding:36px 0}
+.tymark{font-size:28px;margin-bottom:18px;opacity:.65}
+.tytitle{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;color:var(--white);margin-bottom:10px}
+.tysub{font-size:13px;color:var(--sub);line-height:1.7;max-width:360px;margin:0 auto 28px}
+.ctabox{border:0.5px solid rgba(200,169,110,.25);background:rgba(200,169,110,.04);border-radius:2px;padding:26px;margin-bottom:8px}
+.ctabox p{font-size:13px;color:var(--sub);line-height:1.65;margin-bottom:14px}
+
+@media(max-width:580px){
+  header{padding:14px 20px}
+  .page{padding:90px 16px 50px}
+  .ogrid.cols3{grid-template-columns:repeat(2,1fr)}
+  .compare{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Bathroom<span> Design</span></div>
+  <a class="hlink" href="https://bathroomdesign.be/contact/">Gratis offerte</a>
+</header>
+
+<div class="page">
+<div class="wrap">
+
+  <div class="eyebrow">Gratis AI stijlvisualisatie</div>
+  <h1>Zo ziet jouw badkamer<br>eruit in een <em>andere stijl</em></h1>
+  <p class="hero-sub">Beantwoord 4 korte vragen. Onze AI genereert een fotorealistisch beeld van jouw getransformeerde badkamer.</p>
+
+  <div class="pbar" id="pbar"></div>
+
+  <!-- ── STAP 1: Upload ── -->
+  <div class="step active" id="s1">
+    <div class="prevwrap">
+      <img id="previmg" class="previmg" alt="preview">
+      <div class="prevbadge" id="prevbadge" style="display:none">Uw badkamer</div>
+    </div>
+    <div class="uzone" id="dz" onclick="document.getElementById('fi').click()">
+      <svg class="uicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <rect x="3" y="3" width="18" height="18" rx="1"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <path d="M21 15l-5-5L5 21"/>
+      </svg>
+      <p><strong>Klik om uw badkamerfoto te uploaden</strong></p>
+      <p style="margin-top:5px">JPG of PNG · max 10 MB</p>
+      <input type="file" id="fi" accept="image/jpeg,image/png,image/webp">
+    </div>
+    <div style="margin-top:18px">
+      <button class="bgold" id="btn1" disabled onclick="go(2)">Volgende →</button>
+    </div>
+  </div>
+
+  <!-- ── STAP 2: Stijl (70%) ── -->
+  <div class="step" id="s2">
+    <p class="slabel">Vraag 1 van 3 — Welke stijl spreekt je het meest aan?</p>
+    <p class="otip">Dit bepaalt voor 70% het eindresultaat — de algemene sfeer, kleurpalet en lijnvoering.</p>
+    <div class="ogrid cols3" id="grid-stijl"></div>
+    <button class="bgold" id="btn2" disabled onclick="go(3)">Volgende →</button>
+    <button class="bghost" onclick="go(1)">← Terug</button>
+  </div>
+
+  <!-- ── STAP 3: Sfeer + Materiaal ── -->
+  <div class="step" id="s3">
+    <p class="slabel">Vraag 2 van 3 — Welke sfeer wil je?</p>
+    <p class="otip">Dit bepaalt kleuren, lichtinval en contrast.</p>
+    <div class="ogrid cols2" id="grid-sfeer"></div>
+
+    <p class="slabel" style="margin-top:20px">Vraag 3 van 3 — Welk materiaal spreekt je aan?</p>
+    <p class="otip">Dit bepaalt het tegeltype en het wastafelmeubel.</p>
+    <div class="ogrid cols3" id="grid-mat"></div>
+
+    <button class="bgold" id="btn3" disabled onclick="go(4)">Volgende →</button>
+    <button class="bghost" onclick="go(2)">← Terug</button>
+  </div>
+
+  <!-- ── STAP 4: Licht ── -->
+  <div class="step" id="s4">
+    <p class="slabel">Vraag 4 van 4 — Welke verlichting past bij jou?</p>
+    <p class="otip">Verlichting maakt het verschil tussen een gewone en een wauw-badkamer.</p>
+    <div class="ogrid cols2" id="grid-licht"></div>
+    <button class="bgold" id="btn4" disabled onclick="go(5)">Genereer mijn render →</button>
+    <button class="bghost" onclick="go(3)">← Terug</button>
+  </div>
+
+  <!-- ── STAP 5: Rendering ── -->
+  <div class="step" id="s5">
+    <div id="genui">
+      <div class="genwrap">
+        <div class="spin"></div>
+        <p class="gentitle">Render wordt gegenereerd</p>
+        <p class="gensub" id="genmsg">Badkamer analyseren...</p>
+      </div>
+    </div>
+    <div id="resui" style="display:none">
+      <div class="compare">
+        <div>
+          <img id="origimg" alt="origineel">
+          <p class="imglabel">Nu</p>
+        </div>
+        <div>
+          <div class="imgbox" id="blurbox">
+            <img id="blurimg" alt="">
+            <div class="blur-label">Vul uw e-mail in om te ontsluiten</div>
+          </div>
+          <img id="renderimg" alt="render" style="display:none;width:100%;height:210px;border-radius:2px;border:0.5px solid var(--border);object-fit:cover">
+          <p class="imglabel" id="renderlabel">Na</p>
+        </div>
+      </div>
+      <div class="gate">
+        <div class="glabel">Gratis — geen verplichtingen</div>
+        <div class="gtitle">Ontvang uw render per e-mail</div>
+        <p class="gsub">Vul uw gegevens in en we sturen u de volledige render + een gratis inspiratiedossier op maat van uw stijlkeuzes.</p>
+        <input class="inp" id="inp-name" type="text" placeholder="Voornaam">
+        <input class="inp" id="inp-email" type="email" placeholder="E-mailadres">
+        <button class="bgold" onclick="submitLead()">Verstuur mijn render →</button>
+        <div class="errmsg" id="errmsg">Vul uw voornaam en een geldig e-mailadres in.</div>
+      </div>
+      <p class="note">Geen spam. Enkel relevante inspiratie. Uitschrijven kan altijd.</p>
+      <div id="next-btn-wrap" style="display:none;margin-top:16px">
+        <button class="bgold" onclick="go(6)">Gratis afspraak inplannen →</button>
+      </div>
+    </div>
+    <div id="errrender" style="display:none;text-align:center;padding:48px 20px">
+      <p style="font-size:14px;color:#e24b4a;margin-bottom:16px">Er liep iets mis. Probeer opnieuw.</p>
+      <button class="bghost" onclick="go(4)" style="width:auto;padding:12px 24px;display:inline-block">← Opnieuw</button>
+    </div>
+  </div>
+
+  <!-- ── STAP 6: Bedankt ── -->
+  <div class="step" id="s6">
+    <div class="ty">
+      <div class="tymark">✦</div>
+      <div class="tytitle">Merci, <span id="tyname"></span></div>
+      <p class="tysub">Uw render is onderweg naar <strong id="tyemail"></strong>. Controleer ook uw spammap.</p>
+      <div class="ctabox">
+        <p>Wil u een echte offerte voor uw badkamer? Onze specialist komt vrijblijvend bij u langs — inclusief 3D visualisatie.</p>
+        <a href="https://bathroomdesign.be/contact/" class="bgold" style="display:block;text-align:center;text-decoration:none;padding:15px">Gratis afspraak inplannen →</a>
+      </div>
+      <p class="note">Of bel ons op <a href="tel:+32477601605" style="color:var(--accent)">+32 477 60 16 05</a></p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ── Data ──
+const STIJLEN = [
+  {n:"Modern & strak", d:"Beton, zwarte details, clean",   img:"https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&q=70"},
+  {n:"Scandinavisch",  d:"Warm hout, wit, eenvoud",        img:"https://images.unsplash.com/photo-1507652313519-d4e9174996dd?w=400&q=70"},
+  {n:"Luxe klassiek",  d:"Marmer, goud, prestige",         img:"https://images.unsplash.com/photo-1620626011761-996317702519?w=400&q=70"},
+  {n:"Industrieel",    d:"Donker, ruw, mat staal",         img:"https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&q=70"},
+  {n:"Mediterraans",   d:"Terracotta, natuur, warmte",     img:"https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400&q=70"},
+  {n:"Japans / Zen",   d:"Steen, hout, sereniteit",        img:"https://images.unsplash.com/photo-1540518614846-7eded433c457?w=400&q=70"},
+];
+const SFEREN = [
+  {n:"Warm & gezellig",     d:"Zachte tinten, amber gloed",    img:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=70"},
+  {n:"Fris & luchtig",      d:"Open gevoel, helder wit",       img:"https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=400&q=70"},
+  {n:"Donker & dramatisch", d:"Moody, gedurfd contrast",       img:"https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=70"},
+  {n:"Rustig & sereen",     d:"Neutraal, zen, kalmerend",      img:"https://images.unsplash.com/photo-1604014237800-1c9102c219da?w=400&q=70"},
+];
+const MATERIALEN = [
+  {n:"Natuursteen", d:"Travertijn, leisteen",     img:"https://images.unsplash.com/photo-1615971677499-5467cbab01c0?w=400&q=70"},
+  {n:"Hout",        d:"Eiken, noten",             img:"https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=70"},
+  {n:"Beton",       d:"Cement look, rauw",        img:"https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&q=70"},
+  {n:"Marmer",      d:"Geaderd, glanzend",        img:"https://images.unsplash.com/photo-1600121848594-d8644e57abab?w=400&q=70"},
+  {n:"Keramiek",    d:"Grote formaten, mat",      img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=70"},
+];
+const LICHTEN = [
+  {n:"Indirecte verlichting", d:"LED strips, warme gloed",      img:"https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=70"},
+  {n:"Spots & accenten",      d:"Inbouwspots, dramatisch",      img:"https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&q=70"},
+  {n:"Donkere sfeer",         d:"Minimaal, mysterieus",         img:"https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&q=70"},
+  {n:"Warm & sfeervol",       d:"Zachte gloed, gezellig",      img:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=70"},
+];
+
+// ── State ──
+let b64='', mime='image/jpeg', stijl='', sfeer='', materiaal='', licht='', renderUrl='', remoteUrl='';
+const TOTAL_STEPS = 6;
+
+// ── Init grids ──
+function makeGrid(id, items, stateKey, btnId) {
+  const g = document.getElementById(id);
+  items.forEach(it => {
+    const d = document.createElement('div');
+    d.className = 'ocard';
+    d.innerHTML = it.img
+      ? `<img class="ocard-img" src="${it.img}" alt="${it.n}" loading="lazy"><div class="oname">${it.n}</div><div class="odesc">${it.d}</div>`
+      : `<div class="oname">${it.n}</div><div class="odesc">${it.d}</div>`;
+    d.onclick = () => {
+      g.querySelectorAll('.ocard').forEach(c=>c.classList.remove('sel'));
+      d.classList.add('sel');
+      if(stateKey==='stijl') stijl=it.n;
+      if(stateKey==='sfeer') sfeer=it.n;
+      if(stateKey==='mat')   materiaal=it.n;
+      if(stateKey==='licht') licht=it.n;
+      checkBtn3(); checkBtn4();
+      if(btnId) document.getElementById(btnId).disabled = false;
+    };
+    g.appendChild(d);
+  });
+}
+makeGrid('grid-stijl', STIJLEN,   'stijl',  'btn2');
+makeGrid('grid-sfeer', SFEREN,    'sfeer',  null);
+makeGrid('grid-mat',   MATERIALEN,'mat',    null);
+makeGrid('grid-licht', LICHTEN,   'licht',  'btn4');
+
+function checkBtn3() { document.getElementById('btn3').disabled = !(sfeer && materiaal); }
+function checkBtn4() { document.getElementById('btn4').disabled = !licht; }
+
+// ── Progress bar ──
+function buildPbar(current) {
+  const pb = document.getElementById('pbar');
+  pb.innerHTML='';
+  const labels = ['Foto','Stijl','Sfeer','Licht','Render','Klaar'];
+  for(let i=1;i<=TOTAL_STEPS;i++){
+    const d=document.createElement('div');
+    d.className='pdot'+(i<=current?' done':'');
+    d.style.width= i===1||i===TOTAL_STEPS ? '12px' : '28px';
+    d.title=labels[i-1];
+    pb.appendChild(d);
+  }
+}
+
+// ── Navigation ──
+function go(n) {
+  for(let i=1;i<=TOTAL_STEPS;i++) {
+    document.getElementById('s'+i).classList.toggle('active', i===n);
+  }
+  buildPbar(n);
+  if(n===5) startRender();
+}
+
+// ── Upload ──
+document.getElementById('fi').addEventListener('change', e=>{ const f=e.target.files[0]; if(f) handleFile(f); });
+const dz=document.getElementById('dz');
+dz.addEventListener('dragover', e=>{ e.preventDefault(); dz.style.borderColor='var(--accent)'; });
+dz.addEventListener('dragleave', ()=>{ dz.style.borderColor=''; });
+dz.addEventListener('drop', e=>{ e.preventDefault(); dz.style.borderColor=''; handleFile(e.dataTransfer.files[0]); });
+
+function handleFile(f) {
+  if(f.size>10*1024*1024){ alert('Max 10 MB'); return; }
+  mime=f.type||'image/jpeg';
+  const r=new FileReader();
+  r.onload=ev=>{
+    const dataUrl=ev.target.result;
+    b64=dataUrl.split(',')[1];
+    const p=document.getElementById('previmg');
+    p.src=dataUrl; p.style.display='block';
+    document.getElementById('prevbadge').style.display='block';
+    document.getElementById('btn1').disabled=false;
+  };
+  r.readAsDataURL(f);
+}
+
+// ── Render ──
+async function startRender() {
+  document.getElementById('genui').style.display='block';
+  document.getElementById('resui').style.display='none';
+  document.getElementById('errrender').style.display='none';
+  document.getElementById('origimg').src='data:'+mime+';base64,'+b64;
+  document.getElementById('renderlabel').textContent=stijl;
+
+  const msgs=['Badkamer analyseren...','Stijl toepassen: '+stijl+'...','Materialen renderen...','Details verfijnen...','Bijna klaar...'];
+  let mi=0;
+  const msgEl=document.getElementById('genmsg');
+  const iv=setInterval(()=>{ mi=(mi+1)%msgs.length; msgEl.textContent=msgs[mi]; },2200);
+
+  try {
+    const res=await fetch('/api/render',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({image_base64:b64,mime_type:mime,style:stijl,sfeer,materiaal,licht})
+    });
+    clearInterval(iv);
+    if(!res.ok) throw new Error(await res.text());
+    const data=await res.json();
+    renderUrl=data.url; remoteUrl=data.remote_url||data.url;
+
+    document.getElementById('blurimg').src=renderUrl;
+    document.getElementById('genui').style.display='none';
+    document.getElementById('resui').style.display='block';
+  } catch(e) {
+    clearInterval(iv);
+    console.error(e);
+    document.getElementById('genui').style.display='none';
+    document.getElementById('errrender').style.display='block';
+  }
+}
+
+// ── Lead submit ──
+async function submitLead() {
+  const name=document.getElementById('inp-name').value.trim();
+  const email=document.getElementById('inp-email').value.trim();
+  const err=document.getElementById('errmsg');
+  if(!name||!email||!email.includes('@')){ err.style.display='block'; return; }
+  err.style.display='none';
+
+  // Unblur render
+  document.getElementById('blurbox').style.display='none';
+  document.getElementById('renderimg').src=renderUrl;
+  document.getElementById('renderimg').style.display='block';
+
+  // Save lead + send mail (fire and forget)
+  fetch('/api/lead',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({name,email,style:stijl,sfeer,materiaal,licht,render_url:renderUrl})
+  }).catch(()=>{});
+
+  document.getElementById('tyname').textContent=name;
+  document.getElementById('tyemail').textContent=email;
+  // redirect verwijderd — gebruiker klikt zelf op de knop
+}
+
+// ── Boot ──
+buildPbar(1);
+</script>
+</body>
+</html>
