@@ -216,19 +216,22 @@ async def render(req: RenderRequest):
 
 
 def send_mail(to, name, style, render_url):
-    if not SMTP_USER or not SMTP_PASS:
-        print("[MAIL] SMTP niet geconfigureerd — sla over")
+    resend_key = os.getenv("RESEND_API_KEY", "")
+    if not resend_key:
+        logging.info("[MAIL] RESEND_API_KEY niet ingesteld — sla over")
         return
-    # Maak relatieve proxy URL absoluut voor in de mail
+
     if render_url and render_url.startswith("/"):
         full_url = f"{APP_URL}{render_url}"
     else:
         full_url = render_url
+
     render_block = (
         f'<p style="margin:16px 0"><a href="{full_url}" '
         f'style="color:#c8a96e;font-weight:500">Bekijk uw render →</a></p>'
         if full_url else ""
     )
+
     html = f"""
 <div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;color:#1a1a1a;background:#fff;padding:32px">
   <p style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c8a96e;margin-bottom:8px">Bathroom Design</p>
@@ -250,23 +253,20 @@ def send_mail(to, name, style, render_url):
   </p>
 </div>"""
 
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"Uw badkamer in stijl {style} — Bathroom Design"
-    msg["From"]    = MAIL_FROM
-    msg["To"]      = to
-    if MAIL_BCC:
-        msg["Bcc"] = MAIL_BCC
-    msg.attach(MIMEText(html, "html"))
-
-    logging.info(f"[MAIL] Poging naar {to} via {SMTP_HOST}:{SMTP_PORT} user={SMTP_USER}")
+    logging.info(f"[MAIL] Versturen via Resend naar {to}")
     try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as s:
-            s.ehlo()
-            s.starttls()
-            s.ehlo()
-            s.login(SMTP_USER, SMTP_PASS)
-            s.sendmail(MAIL_FROM, [to] + ([MAIL_BCC] if MAIL_BCC else []), msg.as_string())
-        logging.info(f"[MAIL] Verstuurd naar {to}")
+        import resend
+        resend.api_key = resend_key
+        params = {
+            "from": "Bathroom Design <onboarding@resend.dev>",
+            "to": [to],
+            "subject": f"Uw badkamer in stijl {style} — Bathroom Design",
+            "html": html,
+        }
+        if MAIL_BCC:
+            params["bcc"] = [MAIL_BCC]
+        r = resend.Emails.send(params)
+        logging.info(f"[MAIL] Verstuurd: {r}")
     except Exception as e:
         logging.info(f"[MAIL] Fout ({type(e).__name__}): {e}")
 
