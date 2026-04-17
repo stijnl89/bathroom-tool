@@ -10,8 +10,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}
 header{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid var(--border);background:rgba(10,10,10,.94);backdrop-filter:blur(12px)}
-.logo{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;letter-spacing:2.5px;color:var(--accent);text-transform:uppercase}
-.logo span{color:var(--text);font-weight:300}
+
 .hlink{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);text-decoration:none;transition:color .2s}
 .hlink:hover{color:var(--accent)}
 
@@ -113,7 +112,9 @@ h1 em{font-style:italic;color:var(--al)}
 </head>
 <body>
 <header>
-  <div class="logo">Bathroom<span> Design</span></div>
+  <a href="https://bathroomdesign.be" style="display:flex;align-items:center">
+    <img src="/logo.png" alt="Bathroom Design" style="height:36px;width:auto;object-fit:contain">
+  </a>
   <a class="hlink" href="https://bathroomdesign.be/contact/">Gratis offerte</a>
 </header>
 
