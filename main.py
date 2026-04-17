@@ -1,4 +1,5 @@
-import os, uuid, json, asyncio, datetime, smtplib, base64 as b64lib, io
+import os, uuid, json, asyncio, datetime, smtplib, base64 as b64lib, io, logging
+logging.basicConfig(level=logging.INFO, force=True)
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -106,7 +107,7 @@ def get_logo_sync():
     ratio = 180 / logo.width
     logo = logo.resize((180, int(logo.height * ratio)), Image.LANCZOS)
     _cached_logo = logo
-    print(f"[LOGO] Geladen: {logo.size}")
+    logging.info(f"[LOGO] Geladen: {logo.size}")
     return _cached_logo
 
 @app.get("/api/proxy-image")
@@ -143,7 +144,7 @@ async def proxy_image(url: str):
         pos_x = w - lw - margin - pad_x
         pos_y = h - lh - margin - pad_y
         img_rgb.paste(logo, (pos_x, pos_y), logo.split()[3])
-        print(f"[LOGO] Geplakt op ({pos_x},{pos_y}), afbeelding {w}x{h}")
+        logging.info(f"[LOGO] Geplakt op ({pos_x},{pos_y}), afbeelding {w}x{h}")
 
     buf = io.BytesIO()
     img_rgb.save(buf, format="JPEG", quality=92)
@@ -156,7 +157,7 @@ async def render(req: RenderRequest):
         raise HTTPException(500, "REPLICATE_API_TOKEN niet ingesteld")
 
     prompt = build_prompt(req.style, req.sfeer, req.materiaal, req.licht)
-    print(f"[RENDER] Prompt: {prompt}")
+    logging.info(f"[RENDER] Prompt: {prompt}")
 
     from PIL import Image
 
@@ -168,7 +169,7 @@ async def render(req: RenderRequest):
     img.save(buf, format="JPEG", quality=88)
     resized_b64 = b64lib.b64encode(buf.getvalue()).decode()
     data_uri = f"data:image/jpeg;base64,{resized_b64}"
-    print(f"[RENDER] Afbeelding verkleind naar {img.size}, {len(buf.getvalue())//1024}KB")
+    logging.info(f"[RENDER] Afbeelding verkleind naar {img.size}, {len(buf.getvalue())//1024}KB")
 
     headers_json = {"Authorization": f"Token {REPLICATE_TOKEN}", "Content-Type": "application/json"}
 
@@ -188,19 +189,19 @@ async def render(req: RenderRequest):
             "https://api.replicate.com/v1/models/black-forest-labs/flux-depth-pro/predictions",
             json=payload, headers=headers_json
         )
-        print(f"[RENDER] Replicate response status: {r.status_code}")
-        print(f"[RENDER] Replicate response body: {r.text[:500]}")
+        logging.info(f"[RENDER] Replicate response status: {r.status_code}")
+        logging.info(f"[RENDER] Replicate response body: {r.text[:500]}")
         if r.status_code != 201:
             raise HTTPException(500, f"Replicate fout: {r.text}")
         pred_id = r.json()["id"]
-        print(f"[RENDER] Prediction ID: {pred_id}")
+        logging.info(f"[RENDER] Prediction ID: {pred_id}")
 
         for _ in range(60):
             await asyncio.sleep(2)
             poll = await client.get(f"https://api.replicate.com/v1/predictions/{pred_id}", headers=headers_json)
             result = poll.json()
             status = result["status"]
-            print(f"[RENDER] Status: {status}")
+            logging.info(f"[RENDER] Status: {status}")
             if status == "succeeded":
                 remote_url = result["output"]
                 if isinstance(remote_url, list):
@@ -261,9 +262,9 @@ def send_mail(to, name, style, render_url):
             s.starttls()
             s.login(SMTP_USER, SMTP_PASS)
             s.sendmail(MAIL_FROM, [to] + ([MAIL_BCC] if MAIL_BCC else []), msg.as_string())
-        print(f"[MAIL] Verstuurd naar {to}")
+        logging.info(f"[MAIL] Verstuurd naar {to}")
     except Exception as e:
-        print(f"[MAIL] Fout: {e}")
+        logging.info(f"[MAIL] Fout: {e}")
 
 
 @app.post("/api/lead")
@@ -277,7 +278,7 @@ async def save_lead(lead: LeadRequest):
     }
     with open("leads.jsonl", "a") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
-    print(f"[LEAD] {entry}")
+    logging.info(f"[LEAD] {entry}")
     send_mail(lead.email, lead.name, lead.style, lead.render_url)
     return {"ok": True}
 
