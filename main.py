@@ -277,10 +277,14 @@ async def save_lead(lead: LeadRequest):
         "materiaal": lead.materiaal, "licht": lead.licht,
         "timestamp": datetime.datetime.utcnow().isoformat(),
     }
-    with open("leads.jsonl", "a") as f:
-        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    try:
+        with open("leads.jsonl", "a") as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    except Exception as e:
+        logging.info(f"[LEAD] write error: {e}")
     logging.info(f"[LEAD] {entry}")
-    send_mail(lead.email, lead.name, lead.style, lead.render_url)
+    import threading
+    threading.Thread(target=send_mail, args=(lead.email, lead.name, lead.style, lead.render_url), daemon=True).start()
     return {"ok": True}
 
 
