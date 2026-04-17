@@ -216,9 +216,9 @@ async def render(req: RenderRequest):
 
 
 def send_mail(to, name, style, render_url):
-    resend_key = os.getenv("RESEND_API_KEY", "")
+    resend_key = os.getenv("BREVO_API_KEY", "")
     if not resend_key:
-        logging.info("[MAIL] RESEND_API_KEY niet ingesteld — sla over")
+        logging.info("[MAIL] BREVO_API_KEY niet ingesteld — sla over")
         return
 
     if render_url and render_url.startswith("/"):
@@ -253,20 +253,22 @@ def send_mail(to, name, style, render_url):
   </p>
 </div>"""
 
-    logging.info(f"[MAIL] Versturen via Resend naar {to}")
+    logging.info(f"[MAIL] Versturen via Brevo naar {to}")
     try:
-        import resend
-        resend.api_key = resend_key
-        params = {
-            "from": "Bathroom Design <stino89@gmail.com>",
-            "to": [to],
-            "subject": f"Uw badkamer in stijl {style} — Bathroom Design",
-            "html": html,
-        }
-        if MAIL_BCC:
-            params["bcc"] = [MAIL_BCC]
-        r = resend.Emails.send(params)
-        logging.info(f"[MAIL] Verstuurd: {r}")
+        import sib_api_v3_sdk
+        from sib_api_v3_sdk.rest import ApiException
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key["api-key"] = resend_key
+        api = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+        send_params = sib_api_v3_sdk.SendSmtpEmail(
+            to=[{"email": to, "name": name}],
+            sender={"email": "info@bathroomdesign.be", "name": "Bathroom Design"},
+            subject=f"Uw badkamer in stijl {style} — Bathroom Design",
+            html_content=html,
+            bcc=[{"email": MAIL_BCC}] if MAIL_BCC else None
+        )
+        r = api.send_transac_email(send_params)
+        logging.info(f"[MAIL] Verstuurd: {r.message_id}")
     except Exception as e:
         logging.info(f"[MAIL] Fout ({type(e).__name__}): {e}")
 
