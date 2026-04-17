@@ -373,7 +373,13 @@ async function startRender() {
     const data=await res.json();
     renderUrl=data.url; remoteUrl=data.remote_url||data.url;
 
-    document.getElementById('blurimg').src=renderUrl;
+    // Download afbeelding eenmalig als blob zodat Railway proxy niet herhaald wordt
+    const imgResp = await fetch(renderUrl);
+    const blob = await imgResp.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    renderUrl = blobUrl;  // vervang proxy URL door lokale blob
+
+    document.getElementById('blurimg').src=blobUrl;
     document.getElementById('genui').style.display='none';
     document.getElementById('resui').style.display='block';
   } catch(e) {
