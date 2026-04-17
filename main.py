@@ -258,14 +258,17 @@ def send_mail(to, name, style, render_url):
         msg["Bcc"] = MAIL_BCC
     msg.attach(MIMEText(html, "html"))
 
+    logging.info(f"[MAIL] Poging naar {to} via {SMTP_HOST}:{SMTP_PORT} user={SMTP_USER}")
     try:
         with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as s:
+            s.ehlo()
             s.starttls()
+            s.ehlo()
             s.login(SMTP_USER, SMTP_PASS)
             s.sendmail(MAIL_FROM, [to] + ([MAIL_BCC] if MAIL_BCC else []), msg.as_string())
         logging.info(f"[MAIL] Verstuurd naar {to}")
     except Exception as e:
-        logging.info(f"[MAIL] Fout: {e}")
+        logging.info(f"[MAIL] Fout ({type(e).__name__}): {e}")
 
 
 @app.post("/api/lead")
