@@ -27,7 +27,7 @@ NEGATIVE_PROMPT = (
     "ugly, deformed, blurry, low quality, distorted, people, person, human, face, "
     "reflection of person, man, woman, selfie, watermark, logo, text, "
     "extra furniture, floating objects, unrealistic proportions, duplicate rooms, "
-    "windows, natural light, sunlight, daylight, outdoor view"
+    "door in shower, shower door obstruction, added doors, new windows"
 )
 
 STYLE_BASE = {
@@ -55,10 +55,10 @@ MATERIAAL_MODIFIERS = {
 }
 
 LICHT_MODIFIERS = {
-    "Indirecte verlichting": "soft indirect lighting, LED strips, warm glow behind mirrors, no windows",
-    "Spots & accenten":      "recessed spotlights, accent lighting, dramatic highlights, no windows",
-    "Donkere sfeer":         "minimal lighting, moody ambience, deep shadows, no windows",
-    "Warm & sfeervol":       "warm ambient lighting, candle-like glow, soft shadows, no windows",
+    "Indirecte verlichting": "soft indirect lighting, LED strips, warm glow behind mirrors",
+    "Spots & accenten":      "recessed spotlights, accent lighting, dramatic highlights",
+    "Donkere sfeer":         "minimal lighting, moody ambience, deep shadows",
+    "Warm & sfeervol":       "warm ambient lighting, candle-like glow, soft shadows",
 }
 
 def build_prompt(style, sfeer, materiaal, licht):
@@ -216,8 +216,9 @@ async def render(req: RenderRequest):
 
 
 def send_mail(to, name, style, render_url):
-    if not SMTP_USER or not SMTP_PASS:
-        logging.info("[MAIL] SMTP niet geconfigureerd — sla over")
+    api_key = os.getenv("BREVO_API_KEY", "")
+    if not api_key:
+        logging.info("[MAIL] BREVO_API_KEY niet ingesteld")
         return
 
     if render_url and render_url.startswith("/"):
@@ -231,8 +232,7 @@ def send_mail(to, name, style, render_url):
         if full_url else ""
     )
 
-    html = f"""
-<div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;color:#1a1a1a;background:#fff;padding:32px">
+    html = f"""<div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;color:#1a1a1a;background:#fff;padding:32px">
   <p style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c8a96e;margin-bottom:8px">Bathroom Design</p>
   <h2 style="font-weight:400;font-size:22px;margin-bottom:20px">Beste {name},</h2>
   <p style="line-height:1.7;color:#444">Bedankt voor het gebruik van onze gratis stijltool.
@@ -252,23 +252,24 @@ def send_mail(to, name, style, render_url):
   </p>
 </div>"""
 
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"Uw badkamer in stijl {style} — Bathroom Design"
-    msg["From"]    = MAIL_FROM
-    msg["To"]      = to
-    if MAIL_BCC:
-        msg["Bcc"] = MAIL_BCC
-    msg.attach(MIMEText(html, "html"))
+    sender_email = os.getenv("BREVO_SENDER_EMAIL", "info@wonder-walls.be")
+    sender_name  = os.getenv("BREVO_SENDER_NAME", "Bathroom Design")
 
-    logging.info(f"[MAIL] Versturen via {SMTP_HOST}:{SMTP_PORT} naar {to}")
+    logging.info(f"[MAIL] Versturen via Brevo API naar {to} van {sender_email}")
     try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as s:
-            s.ehlo()
-            s.starttls()
-            s.ehlo()
-            s.login(SMTP_USER, SMTP_PASS)
-            s.sendmail(MAIL_FROM, [to] + ([MAIL_BCC] if MAIL_BCC else []), msg.as_string())
-        logging.info(f"[MAIL] Verstuurd naar {to}")
+        import sib_api_v3_sdk
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key["api-key"] = api_key
+        api = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+        params = sib_api_v3_sdk.SendSmtpEmail(
+            to=[{"email": to, "name": name}],
+            sender={"email": sender_email, "name": sender_name},
+            subject=f"Uw badkamer in stijl {style} — Bathroom Design",
+            html_content=html,
+            bcc=[{"email": MAIL_BCC}] if MAIL_BCC else None
+        )
+        r = api.send_transac_email(params)
+        logging.info(f"[MAIL] Verstuurd: {r.message_id}")
     except Exception as e:
         logging.info(f"[MAIL] Fout ({type(e).__name__}): {e}")
 
