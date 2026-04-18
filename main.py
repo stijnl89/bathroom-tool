@@ -262,7 +262,10 @@ def send_mail(to, name, style, render_url):
         api = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
         send_params = sib_api_v3_sdk.SendSmtpEmail(
             to=[{"email": to, "name": name}],
-            sender={"email": "info@bathroomdesign.be", "name": "Bathroom Design"},
+            sender={
+                "email": os.getenv("BREVO_SENDER_EMAIL", "stino89@gmail.com"),
+                "name": os.getenv("BREVO_SENDER_NAME", "Bathroom Design")
+            },
             subject=f"Uw badkamer in stijl {style} — Bathroom Design",
             html_content=html,
             bcc=[{"email": MAIL_BCC}] if MAIL_BCC else None
