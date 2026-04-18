@@ -213,7 +213,14 @@ h1 em{font-style:italic;color:var(--al)}
           <p class="imglabel" id="renderlabel">Na</p>
         </div>
       </div>
-      <div id="rerender-bar" style="margin-bottom:16px">
+      <div id="tevreden-bar" style="display:none;text-align:center;margin:16px 0">
+        <p style="font-size:13px;color:var(--sub);margin-bottom:10px">Tevreden met het resultaat?</p>
+        <div style="display:flex;gap:8px;justify-content:center">
+          <button class="btn-rerender" onclick="document.getElementById('tevreden-bar').style.display='none'" style="max-width:140px">Ja ✓</button>
+          <button class="btn-rerender" onclick="toonFeedback()" style="max-width:140px;border-color:var(--accent);color:var(--accent)">Nee, aanpassen</button>
+        </div>
+      </div>
+      <div id="rerender-bar" style="display:none;margin-bottom:16px">
         <div class="feedback-wrap">
           <p>Wat klopte er niet?</p>
           <div class="fb-checks">
@@ -441,7 +448,7 @@ async function submitLead() {
     body:JSON.stringify({name,email,style:stijl,sfeer,materiaal,licht,render_url:proxyUrl})
   }).catch(()=>{});
 
-  // Verberg formulier, toon bevestiging
+  // Verberg formulier, toon bevestiging + tevredenheidsvraag
   document.getElementById('submit-btn').style.display='none';
   document.querySelector('.gate').style.display='none';
   document.getElementById('spam-note').style.display='none';
@@ -449,6 +456,13 @@ async function submitLead() {
   document.getElementById('confirm-msg').style.display='block';
   document.getElementById('tyname').textContent=name;
   document.getElementById('tyemail').textContent=email;
+  // Toon tevredenheidsvraag
+  document.getElementById('tevreden-bar').style.display='block';
+}
+
+function toonFeedback() {
+  document.getElementById('tevreden-bar').style.display='none';
+  document.getElementById('rerender-bar').style.display='block';
 }
 
 // ── Feedback ──
