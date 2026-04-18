@@ -301,7 +301,7 @@ const LICHTEN = [
 ];
 
 // ── State ──
-let b64='', mime='image/jpeg', stijl='', sfeer='', materiaal='', licht='', renderUrl='', remoteUrl='', proxyUrl='';
+let b64='', mime='image/jpeg', stijl='', sfeer='', materiaal='', licht='', renderUrl='', remoteUrl='', proxyUrl='', leadVerstuurd=false;
 const TOTAL_STEPS = 6;
 
 // ── Init grids ──
@@ -445,6 +445,7 @@ async function submitLead() {
   document.getElementById('submit-btn').style.display='none';
   document.querySelector('.gate').style.display='none';
   document.getElementById('spam-note').style.display='none';
+  leadVerstuurd = true;
   document.getElementById('confirm-msg').style.display='block';
   document.getElementById('tyname').textContent=name;
   document.getElementById('tyemail').textContent=email;
@@ -489,18 +490,30 @@ async function rerender(strength, feedback=[]) {
     const blobUrl = URL.createObjectURL(blob);
     renderUrl = blobUrl;
 
-    document.getElementById('blurimg').src = blobUrl;
-    document.getElementById('renderimg').style.display='none';
-    document.getElementById('blurbox').style.display='block';
     document.getElementById('rerender-bar').style.display='block';
     document.getElementById('genui').style.display='none';
     document.getElementById('resui').style.display='block';
 
-    // Reset confirm state als die al getoond was
-    document.getElementById('confirm-msg').style.display='none';
-    document.getElementById('submit-btn').style.display='block';
-    document.querySelector('.gate').style.display='block';
-    document.getElementById('spam-note').style.display='block';
+    if (leadVerstuurd) {
+      // Lead al verstuurd — toon render direct zonder blur
+      document.getElementById('blurbox').style.display='none';
+      document.getElementById('renderimg').src = blobUrl;
+      document.getElementById('renderimg').style.display='block';
+      leadVerstuurd = true;
+  document.getElementById('confirm-msg').style.display='block';
+      document.getElementById('submit-btn').style.display='none';
+      document.querySelector('.gate').style.display='none';
+      document.getElementById('spam-note').style.display='none';
+    } else {
+      // Nog niet verstuurd — toon geblurde render
+      document.getElementById('blurimg').src = blobUrl;
+      document.getElementById('blurbox').style.display='block';
+      document.getElementById('renderimg').style.display='none';
+      document.getElementById('confirm-msg').style.display='none';
+      document.getElementById('submit-btn').style.display='block';
+      document.querySelector('.gate').style.display='block';
+      document.getElementById('spam-note').style.display='block';
+    }
   } catch(e) {
     document.getElementById('genui').style.display='none';
     document.getElementById('errrender').style.display='block';
