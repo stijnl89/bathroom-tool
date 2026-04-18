@@ -210,12 +210,15 @@ h1 em{font-style:italic;color:var(--al)}
         <p class="gsub">Vul uw gegevens in en we sturen u de volledige render + een gratis inspiratiedossier op maat van uw stijlkeuzes.</p>
         <input class="inp" id="inp-name" type="text" placeholder="Voornaam">
         <input class="inp" id="inp-email" type="email" placeholder="E-mailadres">
-        <button class="bgold" onclick="submitLead()">Verstuur mijn render →</button>
+        <button class="bgold" id="submit-btn" onclick="submitLead()">Verstuur mijn render →</button>
         <div class="errmsg" id="errmsg">Vul uw voornaam en een geldig e-mailadres in.</div>
       </div>
-      <p class="note">Geen spam. Enkel relevante inspiratie. Uitschrijven kan altijd.</p>
-      <div id="next-btn-wrap" style="display:none;margin-top:16px">
-        <button class="bgold" onclick="go(6)">Gratis afspraak inplannen →</button>
+      <p class="note" id="spam-note">Geen spam. Enkel relevante inspiratie. Uitschrijven kan altijd.</p>
+      <div id="confirm-msg" style="display:none;text-align:center;padding:24px 0">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--al);margin-bottom:10px">Uw visualisatie is onderweg ✶</p>
+        <p style="font-size:13px;color:var(--sub);line-height:1.7;margin-bottom:20px">Wij stuurden uw gepersonaliseerde badkamervisualisatie naar uw inbox.<br>Controleer zeker ook uw spammap.</p>
+        <a href="https://bathroomdesign.be/contact/" class="bgold" style="display:block;text-align:center;text-decoration:none;padding:15px">Gratis afspraak inplannen →</a>
+        <p style="font-size:11px;color:var(--muted);margin-top:12px">Vrijblijvend · Inclusief 3D visualisatie · Geen verplichtingen</p>
       </div>
     </div>
     <div id="errrender" style="display:none;text-align:center;padding:48px 20px">
