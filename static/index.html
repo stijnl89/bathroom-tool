@@ -272,7 +272,7 @@ const LICHTEN = [
 ];
 
 // ── State ──
-let b64='', mime='image/jpeg', stijl='', sfeer='', materiaal='', licht='', renderUrl='', remoteUrl='';
+let b64='', mime='image/jpeg', stijl='', sfeer='', materiaal='', licht='', renderUrl='', remoteUrl='', proxyUrl='';
 const TOTAL_STEPS = 6;
 
 // ── Init grids ──
@@ -372,7 +372,7 @@ async function startRender() {
     clearInterval(iv);
     if(!res.ok) throw new Error(await res.text());
     const data=await res.json();
-    const proxyUrl = data.url;  // bewaar proxy URL voor mail
+    proxyUrl = data.url;  // bewaar proxy URL voor mail (globaal)
     remoteUrl=data.remote_url||data.url;
 
     // Download afbeelding eenmalig als blob zodat Railway proxy niet herhaald wordt
