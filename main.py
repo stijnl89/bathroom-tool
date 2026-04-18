@@ -216,9 +216,8 @@ async def render(req: RenderRequest):
 
 
 def send_mail(to, name, style, render_url):
-    resend_key = os.getenv("BREVO_API_KEY", "")
-    if not resend_key:
-        logging.info("[MAIL] BREVO_API_KEY niet ingesteld — sla over")
+    if not SMTP_USER or not SMTP_PASS:
+        logging.info("[MAIL] SMTP niet geconfigureerd — sla over")
         return
 
     if render_url and render_url.startswith("/"):
@@ -253,25 +252,23 @@ def send_mail(to, name, style, render_url):
   </p>
 </div>"""
 
-    logging.info(f"[MAIL] Versturen via Brevo naar {to}")
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = f"Uw badkamer in stijl {style} — Bathroom Design"
+    msg["From"]    = MAIL_FROM
+    msg["To"]      = to
+    if MAIL_BCC:
+        msg["Bcc"] = MAIL_BCC
+    msg.attach(MIMEText(html, "html"))
+
+    logging.info(f"[MAIL] Versturen via {SMTP_HOST}:{SMTP_PORT} naar {to}")
     try:
-        import sib_api_v3_sdk
-        from sib_api_v3_sdk.rest import ApiException
-        configuration = sib_api_v3_sdk.Configuration()
-        configuration.api_key["api-key"] = resend_key
-        api = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
-        send_params = sib_api_v3_sdk.SendSmtpEmail(
-            to=[{"email": to, "name": name}],
-            sender={
-                "email": os.getenv("BREVO_SENDER_EMAIL", "stino89@gmail.com"),
-                "name": os.getenv("BREVO_SENDER_NAME", "Bathroom Design")
-            },
-            subject=f"Uw badkamer in stijl {style} — Bathroom Design",
-            html_content=html,
-            bcc=[{"email": MAIL_BCC}] if MAIL_BCC else None
-        )
-        r = api.send_transac_email(send_params)
-        logging.info(f"[MAIL] Verstuurd: {r.message_id}")
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as s:
+            s.ehlo()
+            s.starttls()
+            s.ehlo()
+            s.login(SMTP_USER, SMTP_PASS)
+            s.sendmail(MAIL_FROM, [to] + ([MAIL_BCC] if MAIL_BCC else []), msg.as_string())
+        logging.info(f"[MAIL] Verstuurd naar {to}")
     except Exception as e:
         logging.info(f"[MAIL] Fout ({type(e).__name__}): {e}")
 
