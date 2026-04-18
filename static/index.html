@@ -93,6 +93,15 @@ h1 em{font-style:italic;color:var(--al)}
 .inp::placeholder{color:var(--muted)}
 .errmsg{font-size:12px;color:#e24b4a;margin-top:8px;display:none}
 .note{font-size:10px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.55}
+.btn-rerender{flex:1;padding:10px;background:transparent;border:0.5px solid var(--border);color:var(--sub);border-radius:1px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:border-color .15s,color .15s}
+.btn-rerender:hover{border-color:var(--accent);color:var(--accent)}
+.feedback-wrap{margin-bottom:14px;padding:14px;border:0.5px solid var(--border);border-radius:2px;background:var(--card)}
+.feedback-wrap p{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);margin-bottom:10px}
+.fb-checks{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.fb-check{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:var(--text);padding:6px 8px;border:0.5px solid var(--border);border-radius:1px;transition:border-color .15s}
+.fb-check:hover{border-color:var(--muted)}
+.fb-check input{accent-color:var(--accent);width:13px;height:13px;cursor:pointer}
+.fb-check.checked{border-color:var(--accent);background:rgba(200,169,110,.06)}
 
 /* Thankyou */
 .ty{text-align:center;padding:36px 0}
@@ -202,6 +211,23 @@ h1 em{font-style:italic;color:var(--al)}
           </div>
           <img id="renderimg" alt="render" style="display:none;width:100%;height:210px;border-radius:2px;border:0.5px solid var(--border);object-fit:cover">
           <p class="imglabel" id="renderlabel">Na</p>
+        </div>
+      </div>
+      <div id="rerender-bar" style="margin-bottom:16px">
+        <div class="feedback-wrap">
+          <p>Wat klopte er niet?</p>
+          <div class="fb-checks">
+            <label class="fb-check" id="fb-bad"><input type="checkbox" value="bad_veranderd" onchange="toggleFb(this)"> Bad is veranderd</label>
+            <label class="fb-check" id="fb-douche"><input type="checkbox" value="douche_veranderd" onchange="toggleFb(this)"> Douche is veranderd</label>
+            <label class="fb-check" id="fb-wc"><input type="checkbox" value="wc_veranderd" onchange="toggleFb(this)"> WC is veranderd</label>
+            <label class="fb-check" id="fb-indeling"><input type="checkbox" value="indeling" onchange="toggleFb(this)"> Indeling klopt niet</label>
+            <label class="fb-check" id="fb-weinig"><input type="checkbox" value="te_weinig" onchange="toggleFb(this)"> Te weinig veranderd</label>
+            <label class="fb-check" id="fb-kleuren"><input type="checkbox" value="kleuren" onchange="toggleFb(this)"> Kleuren kloppen niet</label>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-rerender" onclick="rerenderWithFeedback(0.35)">← Minder ingrijpend</button>
+          <button class="btn-rerender" onclick="rerenderWithFeedback(0.65)">Meer ingrijpend →</button>
         </div>
       </div>
       <div class="gate">
@@ -422,6 +448,63 @@ async function submitLead() {
   document.getElementById('confirm-msg').style.display='block';
   document.getElementById('tyname').textContent=name;
   document.getElementById('tyemail').textContent=email;
+}
+
+// ── Feedback ──
+function toggleFb(el) {
+  el.parentElement.classList.toggle('checked', el.checked);
+}
+
+function getFeedback() {
+  return Array.from(document.querySelectorAll('.fb-check input:checked')).map(el => el.value);
+}
+
+function rerenderWithFeedback(strength) {
+  rerender(strength, getFeedback());
+}
+
+// ── Rerender ──
+async function rerender(strength, feedback=[]) {
+  // Reset UI naar loading state
+  document.getElementById('renderimg').style.display='none';
+  document.getElementById('blurbox').style.display='none';
+  document.getElementById('rerender-bar').style.display='none';
+  document.getElementById('resui').style.display='none';
+  document.getElementById('genui').style.display='block';
+  document.getElementById('genmsg').textContent = strength <= 0.4 ? 'Minder ingrijpend renderen...' : 'Meer ingrijpend renderen...';
+
+  try {
+    const res = await fetch('/api/render', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({image_base64:b64, mime_type:mime, style:stijl, sfeer, materiaal, licht, strength, feedback})
+    });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    proxyUrl = data.url;
+    remoteUrl = data.remote_url || data.url;
+
+    const imgResp = await fetch(proxyUrl);
+    const blob = await imgResp.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    renderUrl = blobUrl;
+
+    document.getElementById('blurimg').src = blobUrl;
+    document.getElementById('renderimg').style.display='none';
+    document.getElementById('blurbox').style.display='block';
+    document.getElementById('rerender-bar').style.display='block';
+    document.getElementById('genui').style.display='none';
+    document.getElementById('resui').style.display='block';
+
+    // Reset confirm state als die al getoond was
+    document.getElementById('confirm-msg').style.display='none';
+    document.getElementById('submit-btn').style.display='block';
+    document.querySelector('.gate').style.display='block';
+    document.getElementById('spam-note').style.display='block';
+  } catch(e) {
+    document.getElementById('genui').style.display='none';
+    document.getElementById('errrender').style.display='block';
+  }
 }
 
 // ── Boot ──

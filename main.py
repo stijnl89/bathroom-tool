@@ -77,6 +77,8 @@ class RenderRequest(BaseModel):
     sfeer:        str = ""
     materiaal:    str = ""
     licht:        str = ""
+    strength:     float = 0.5  # 0.35 = minder ingrijpend, 0.65 = meer ingrijpend
+    feedback:     list = []   # lijst van klacht-keys
 
 class LeadRequest(BaseModel):
     name:       str
@@ -165,6 +167,12 @@ async def render(req: RenderRequest):
     # Afbeelding verkleinen naar max 1024px (base64 < 1MB vereist door Replicate)
     img_bytes = b64lib.b64decode(req.image_base64)
     img = Image.open(io.BytesIO(img_bytes))
+    # EXIF rotatie corrigeren (telefoonfotos staan anders gedraaid)
+    try:
+        from PIL import ImageOps
+        img = ImageOps.exif_transpose(img)
+    except Exception:
+        pass
     img.thumbnail((1024, 1024), Image.LANCZOS)
     buf = io.BytesIO()
     img.save(buf, format="JPEG", quality=88)
@@ -174,12 +182,38 @@ async def render(req: RenderRequest):
 
     headers_json = {"Authorization": f"Token {REPLICATE_TOKEN}", "Content-Type": "application/json"}
 
+    # strength 0.35 = structuur bewaren, 0.65 = meer stijl toepassen
+    guidance = 8 if req.strength <= 0.4 else (15 if req.strength <= 0.55 else 22)
+
+    # Feedback verwerken
+    extra_negative = []
+    feedback = req.feedback or []
+    if "bad_veranderd" in feedback:
+        extra_negative += ["modified bathtub", "changed bathtub", "different bathtub"]
+    if "douche_veranderd" in feedback:
+        extra_negative += ["modified shower", "changed shower position", "different shower"]
+    if "indeling" in feedback:
+        guidance = max(6, guidance - 5)  # minder ingrijpend
+    if "te_weinig" in feedback:
+        guidance = min(25, guidance + 6)  # meer ingrijpend
+    if "kleuren" in feedback:
+        extra_negative += ["wrong colors", "color mismatch"]
+    if "wc_veranderd" in feedback:
+        extra_negative += ["modified toilet", "moved toilet", "different toilet"]
+
+    neg_prompt = NEGATIVE_PROMPT
+    if extra_negative:
+        neg_prompt = NEGATIVE_PROMPT + ", " + ", ".join(extra_negative)
+
+    logging.info(f"[RENDER] Strength: {req.strength}, guidance: {guidance}, feedback: {feedback}")
+
     payload = {
         "input": {
             "control_image":   data_uri,
             "prompt":           prompt,
+            "negative_prompt":  neg_prompt,
             "steps":            28,
-            "guidance":         15,
+            "guidance":         guidance,
             "safety_tolerance": 5,
             "output_format":    "jpg",
         }
