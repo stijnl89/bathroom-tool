@@ -412,9 +412,13 @@ async function submitLead() {
     body:JSON.stringify({name,email,style:stijl,sfeer,materiaal,licht,render_url:proxyUrl})
   }).catch(()=>{});
 
+  // Verberg formulier, toon bevestiging
+  document.getElementById('submit-btn').style.display='none';
+  document.querySelector('.gate').style.display='none';
+  document.getElementById('spam-note').style.display='none';
+  document.getElementById('confirm-msg').style.display='block';
   document.getElementById('tyname').textContent=name;
   document.getElementById('tyemail').textContent=email;
-  document.getElementById('next-btn-wrap').style.display='block';
 }
 
 // ── Boot ──
