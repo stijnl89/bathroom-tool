@@ -372,13 +372,14 @@ async function startRender() {
     clearInterval(iv);
     if(!res.ok) throw new Error(await res.text());
     const data=await res.json();
-    renderUrl=data.url; remoteUrl=data.remote_url||data.url;
+    const proxyUrl = data.url;  // bewaar proxy URL voor mail
+    remoteUrl=data.remote_url||data.url;
 
     // Download afbeelding eenmalig als blob zodat Railway proxy niet herhaald wordt
-    const imgResp = await fetch(renderUrl);
+    const imgResp = await fetch(proxyUrl);
     const blob = await imgResp.blob();
     const blobUrl = URL.createObjectURL(blob);
-    renderUrl = blobUrl;  // vervang proxy URL door lokale blob
+    renderUrl = blobUrl;  // lokale blob voor display
 
     document.getElementById('blurimg').src=blobUrl;
     document.getElementById('genui').style.display='none';
@@ -408,12 +409,12 @@ async function submitLead() {
   fetch('/api/lead',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({name,email,style:stijl,sfeer,materiaal,licht,render_url:renderUrl})
+    body:JSON.stringify({name,email,style:stijl,sfeer,materiaal,licht,render_url:proxyUrl})
   }).catch(()=>{});
 
   document.getElementById('tyname').textContent=name;
   document.getElementById('tyemail').textContent=email;
-  // redirect verwijderd — gebruiker klikt zelf op de knop
+  document.getElementById('next-btn-wrap').style.display='block';
 }
 
 // ── Boot ──
